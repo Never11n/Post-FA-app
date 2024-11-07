@@ -1,3 +1,4 @@
+from pydantic import EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,12 +15,11 @@ class Settings(BaseSettings):
     USER_DATABASE_HOST: str
     USER_DATABASE_PORT: int
 
-    SMTP_HOST: str
-    SMTP_PORT: int
-    SMTP_USER: str
-    SMTP_PASSWORD: str
-    SMTP_FROM_EMAIL: str
-    SMTP_TLS: bool = True
+    MAIL_USERNAME: str
+    MAIL_HOST: str
+    MAIL_PORT: int
+    MAIL_PASSWORD: str
+    MAIL_SENDER: EmailStr
 
 
 settings = Settings()

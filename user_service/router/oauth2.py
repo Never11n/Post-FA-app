@@ -27,6 +27,7 @@ async def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+
 async def verify_access_token(token: str, credentials_exception):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -42,7 +43,8 @@ async def verify_access_token(token: str, credentials_exception):
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_session)):
     credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                          detail=f"Could not validate credentials", headers={"WWW-Authenticate": "Bearer"})
+                                          detail=f"Could not validate credentials",
+                                          headers={"WWW-Authenticate": "Bearer"})
     token = await verify_access_token(token, credentials_exception)
     query = select(User).where(User.id == token.id)
     result = await db.execute(query)

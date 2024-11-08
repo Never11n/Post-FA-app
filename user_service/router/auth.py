@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from user_service.utils import hash_password, verify, send_email
+from user_service.utils import hash_password, verify, publish_to_queue
 from user_service.router.oauth2 import create_access_token
 from user_service.schemas import UserCreate, UserOut
 from user_service.db import get_session
@@ -26,7 +26,7 @@ async def signup(user: UserCreate, db: AsyncSession = Depends(get_session)):
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
-    await send_email(f'Welcome to our service!{user.username}', user.email)
+    publish_to_queue(new_user.email, new_user.username)
     return new_user
 
 

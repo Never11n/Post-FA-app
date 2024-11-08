@@ -14,6 +14,8 @@ services:
     depends_on:
       user-db:
         condition: service_healthy
+      rabbitmq:
+        condition: service_started
 
 
   user-db:
@@ -22,6 +24,11 @@ services:
       POSTGRES_DB: user_db
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     volumes:
       - ./user-db-data:/var/lib/postgresql/data
 
@@ -43,8 +50,27 @@ services:
       POSTGRES_DB: post_db
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     volumes:
       - ./post-db-data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:4
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  email-worker:
+    build:
+      context: .
+      dockerfile: email_worker.Dockerfile
+    command: [ "python", "email_worker.py" ]
+    depends_on:
+      - rabbitmq
 
 volumes:
   user-db:

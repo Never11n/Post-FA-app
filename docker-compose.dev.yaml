@@ -68,7 +68,7 @@ services:
     build:
       context: .
       dockerfile: email_worker.Dockerfile
-    command: [ "python", "email_worker.py" ]
+    command: [ "python", "user_service/email_worker.py" ]
     depends_on:
       - rabbitmq
 

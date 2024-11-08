@@ -14,9 +14,9 @@ class UserOut(BaseModel):
     email: EmailStr
     username: str
 
-
     class Config:
         orm_mode = True
+
 
 class TokenData(BaseModel):
     id: Optional[str] = None

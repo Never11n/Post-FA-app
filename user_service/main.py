@@ -6,6 +6,7 @@ from user_service.router import auth_router
 
 app = FastAPI()
 
+
 @app.on_event("startup")
 async def init_tables():
     async with engine.begin() as conn:
@@ -13,4 +14,3 @@ async def init_tables():
         await conn.run_sync(Base.metadata.create_all)
 
 app.include_router(auth_router)
-

@@ -1,7 +1,7 @@
 from fastapi import Depends, status, HTTPException
 from fastapi.routing import APIRouter
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from user_service.utils import hash_password, verify, send_email
@@ -14,8 +14,8 @@ router = APIRouter(prefix="/auth")
 
 
 @router.post('/signup/', response_model=UserOut, status_code=status.HTTP_201_CREATED)
-async def signup(user: UserCreate, db : AsyncSession = Depends(get_session)):
-    query = select(User).where(User.email == user.email or User.username == user.username)
+async def signup(user: UserCreate, db: AsyncSession = Depends(get_session)):
+    query = select(User).where(or_(User.email == user.email, User.username == user.username))
     response = await db.execute(query)
     existing_user = response.scalar_one_or_none()
     if existing_user:

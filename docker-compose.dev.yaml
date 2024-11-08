@@ -11,6 +11,9 @@ services:
       - .env
     volumes:
       - ./user_service:/usr/src/app/user_service
+    depends_on:
+      user-db:
+        condition: service_healthy
 
 
   user-db:
@@ -22,6 +25,29 @@ services:
     volumes:
       - ./user-db-data:/var/lib/postgresql/data
 
+  post-service:
+    build:
+      context: .
+      dockerfile: post.Dockerfile
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./post_service:/usr/src/app/post_service
+
+
+  post-db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: post_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./post-db-data:/var/lib/postgresql/data
+
 volumes:
   user-db:
   user-service:
+  post-db:
+  post-service:
